@@ -1,0 +1,5 @@
+#venv
+/stat_web_venv/
+
+#python
+__pycache__/
