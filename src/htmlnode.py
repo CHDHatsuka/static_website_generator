@@ -6,8 +6,9 @@ class HTMLNode:
         self.children = children
         self.props = props
 
-    def to_html():
-        raise Exception(NotImplementedError)
+    def to_html(self):
+        raise NotImplementedError
+        # Subclasses should implement this themselves
 
     def props_to_html(self) -> str:
         if not self.props:
@@ -19,4 +20,19 @@ class HTMLNode:
         return formatted_str
 
     def __repr__(self) -> str:
-        return f"HTMLNode tag = {self.tag}, " + f"value = {self.value}, " + f"children = {self.children}, " + f"props = {self.props}"
+        return f"HTMLNode tag = {self.tag}, value = {self.value}, children = {self.children}, props = {self.props}"
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag: str, value: str, props: dict[str, str] = None):
+        super().__init__(tag, value, None, props)
+
+    def to_html(self) -> str:
+        if self.value == None:
+            raise ValueError
+        if self.tag == None:
+            return self.value
+        else:
+            return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+
+    def __repr__(self) -> str:
+        return f"HTMLNode tag = {self.tag} value = {self.value}, props = {self.props}"
