@@ -1,4 +1,8 @@
 from enum import Enum
+from sys import maxsize
+from htmlnode import HTMLNode, ParentNode
+from inline_markdown import text_to_textnodes
+from textnode import text_node_to_html_node
 
 class BlockType(Enum):
     PARAGRAPH = 'paragraph'
@@ -7,6 +11,7 @@ class BlockType(Enum):
     QUOTE = 'quote'
     UNORDERED_LIST = 'unordered_list'
     ORDERED_LIST = 'ordered_list'
+
 
 def markdown_to_blocks(markdown:str) -> list[str]:
     split_blocks = markdown.split("\n\n")
@@ -18,6 +23,7 @@ def markdown_to_blocks(markdown:str) -> list[str]:
         if block:
             clean_blocks.append(block)
     return clean_blocks
+
 
 def block_to_block_type(block:str) -> BlockType:
     if block.startswith(
@@ -55,3 +61,39 @@ def block_to_block_type(block:str) -> BlockType:
     return BlockType.ORDERED_LIST
 
     return BlockType.PARAGRAPH
+
+def _text_to_children(text: str) -> list[HTMLNode]:
+    text_nodes = text_to_textnodes(text)
+    html_nodes = []
+    for text_node in text_nodes:
+        html_nodes.append(text_node_to_html_node(text_node))
+    return html_nodes
+
+# Type helper function structure:
+# get rid of the markdown markers
+# call _text_to_children on the cleaned up text to get the inline children
+# attach the little LeafNodes to a ParentNode with the corresponding HTML tag
+# return the parent node
+
+def _paragraph_to_html_node(paragraph: str) -> ParentNode:
+    clean_paragraph = paragraph.replace("\n", " ")
+    paragraph_leaf_nodes = _text_to_children(clean_paragraph)
+    paragraph_branch_node = ParentNode("p", paragraph_leaf_nodes, None)
+    return paragraph_branch_node
+
+def _heading_to_html_node(heading: str) -> ParentNode:
+    # need to remove the #s from the head, count them and return their count
+    # then use that count to build the tag
+    split_heading = heading.split(" ", maxsplit=1)
+    number = len(split_heading[0])
+    clean_heading = split_heading[1]
+    tag = f"h{number}"
+    heading_leaf_nodes = _text_to_children(clean_heading)
+    heading_branch_node = ParentNode(tag, heading_leaf_nodes, None)
+    return heading_branch_node
+
+
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        block_type = block_to_block_type(block)

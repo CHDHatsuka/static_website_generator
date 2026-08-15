@@ -1,5 +1,10 @@
 import unittest
-from block_markdown import BlockType, markdown_to_blocks, block_to_block_type
+from block_markdown import (
+    BlockType,
+    markdown_to_blocks,
+    block_to_block_type,
+    _block_type_to_tag,
+)
 
 class TestBlockMarkdown(unittest.TestCase):
     def test_markdown_to_blocks(self):
@@ -69,6 +74,12 @@ This is the same paragraph on a new line
     def test_block_to_block_type_ordered_list(self):
         block7 = "1. First you do this\n2. Then you do that\n3. Then you call me\n4. Finally, it's done"
         self.assertEqual(block_to_block_type(block7), BlockType.ORDERED_LIST)
+
+
+#print test area
+
+block = "### three heading"
+print(_block_type_to_tag(block, "heading"))
 
 if __name__ == "__main__":
     unittest.main()
