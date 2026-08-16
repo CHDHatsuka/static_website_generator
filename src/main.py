@@ -1,11 +1,13 @@
 from textnode import TextNode
 from textnode import TextType
+from copystatic import copystatic
 
-def main():
-    print("hello world")
+source_path = "./static"
+destination_path = "./public"
 
-    dummy = TextNode("dummy text", TextType.BOLD, "https://www.boot.dev")
+def main() -> None:
+    copystatic(source_path, destination_path)
 
-    print(dummy)
+
 
 main()
