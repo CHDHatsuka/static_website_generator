@@ -3,7 +3,8 @@ from block_markdown import (
     BlockType,
     markdown_to_blocks,
     block_to_block_type,
-    _block_type_to_tag,
+    _code_to_html_node,
+    markdown_to_html_node,
 )
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -75,11 +76,45 @@ This is the same paragraph on a new line
         block7 = "1. First you do this\n2. Then you do that\n3. Then you call me\n4. Finally, it's done"
         self.assertEqual(block_to_block_type(block7), BlockType.ORDERED_LIST)
 
+    def test_paragraphs(self):
+        md = """
+    This is **bolded** paragraph
+    text in a p
+    tag here
 
-#print test area
+    This is another paragraph with _italic_ text and `code` here
 
-block = "### three heading"
-print(_block_type_to_tag(block, "heading"))
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+
+    def test_codeblock(self):
+        md = """
+```
+This is text that _should_ remain
+the **same** even with inline stuff
+```
+        """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+        )
+
+# Helper function test area
+
+   # def test_code_to_html_node(self):
+    #    code = "```\nThis is a line of code\nIt has a second line```"
+     #   result = _code_to_html_node(code)
+      #  print(result)
 
 if __name__ == "__main__":
     unittest.main()

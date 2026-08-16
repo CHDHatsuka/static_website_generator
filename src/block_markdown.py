@@ -1,6 +1,7 @@
 from enum import Enum
 from sys import maxsize
 from htmlnode import HTMLNode, ParentNode
+from textnode import TextType, TextNode
 from inline_markdown import text_to_textnodes
 from textnode import text_node_to_html_node
 
@@ -76,7 +77,7 @@ def _text_to_children(text: str) -> list[HTMLNode]:
 # return the parent node
 
 def _paragraph_to_html_node(paragraph: str) -> ParentNode:
-    clean_paragraph = paragraph.replace("\n", " ")
+    clean_paragraph = " ".join(paragraph.split())
     paragraph_leaf_nodes = _text_to_children(clean_paragraph)
     paragraph_branch_node = ParentNode("p", paragraph_leaf_nodes, None)
     return paragraph_branch_node
@@ -134,14 +135,32 @@ def _ordered_list_to_html_node(ordered_list: str) -> ParentNode:
 
 def _code_to_html_node(code: str) -> ParentNode:
     clean_code = code.removeprefix("```\n").removesuffix("```")
-    code_text_node = TextNode(clean_code, "code", None)
-    code_html_node = text_node_to_html_node(code_text_node)
-##########################################################################
-
-
+    code_text_node = TextNode(clean_code, TextType.CODE, None)
+    code_leaf_nodes = [text_node_to_html_node(code_text_node)]
+    code_node = ParentNode("pre", code_leaf_nodes, None)
+    return code_node
 
 
 def markdown_to_html_node(markdown):
-    blocks = markdown_to_blocks(markdown)
-    for block in blocks:
+    md_blocks = markdown_to_blocks(markdown)
+    # blocks of markdown become blocks of HTML
+    # Then everything gets wrapped in <div>
+    # so it should all be in a list so it can be passed into ParentNode again.
+    html_nodes = []
+    for block in md_blocks:
         block_type = block_to_block_type(block)
+        if block_type == BlockType.HEADING:
+            html_nodes.append(heading_to_html_node(block))
+        if block_type == BlockType.PARAGRAPH:
+            html_nodes.append(_paragraph_to_html_node(block))
+        if block_type == BlockType.QUOTE:
+            html_nodes.append(_quote_to_html_node(block))
+        if block_type == BlockType.ORDERED_LIST:
+            html_nodes.append(_ordered_list_to_html_node(block))
+        if block_type == BlockType.UNORDERED_LIST:
+            html_nodes.append(_unordered_list_to_html_node(block))
+        if block_type == BlockType.CODE:
+            html_nodes.append(_code_to_html_node(block))
+    # build the final ParentNode
+    parent_html_node = ParentNode("div", html_nodes, None)
+    return parent_html_node
