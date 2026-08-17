@@ -7,6 +7,7 @@ import shutil
 #    def inner function(source, destination):
 #    look at files in source
 #    copy files from source to destination
+# This function needs no test suite because you can just check your files and see that it worked
 
 # This function handles one level of folders
 # But if it has nested folders, then each folder level needs its own call
