@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from block_markdown import markdown_to_html_node
 from htmlnode import ParentNode
 
@@ -28,3 +29,19 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
         os.makedirs(dest_path_dirname, exist_ok=True)
     with open(dest_path, mode='w') as f:
         f.write(template_text)
+
+
+def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str) -> None:
+    content_files = os.listdir(dir_path_content)
+    for file in content_files:
+        content_file_path = os.path.join(dir_path_content, file)
+        dest_file_path = os.path.join(dest_dir_path, file)
+        if not os.path.isfile(content_file_path):
+            generate_pages_recursive(content_file_path, template_path, dest_file_path)
+        else:
+            if file.endswith(".md"):
+                # string methods work but let's learn how to use more robust tools
+                p = Path(dest_file_path)
+                html_path = p.with_suffix(".html")
+                str_html_path = str(html_path)
+                generate_page(content_file_path, template_path, str_html_path)
