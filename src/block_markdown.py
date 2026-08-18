@@ -150,7 +150,7 @@ def markdown_to_html_node(markdown):
     for block in md_blocks:
         block_type = block_to_block_type(block)
         if block_type == BlockType.HEADING:
-            html_nodes.append(heading_to_html_node(block))
+            html_nodes.append(_heading_to_html_node(block))
         if block_type == BlockType.PARAGRAPH:
             html_nodes.append(_paragraph_to_html_node(block))
         if block_type == BlockType.QUOTE:

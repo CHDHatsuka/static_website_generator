@@ -18,6 +18,8 @@ class TestCopyStatic(unittest.TestCase):
         with self.assertRaises(Exception):
             extracted_title = extract_title(markdown)
 
+
+
 # print tests
 #print(extract_title("# This is an h1 heading"))
 #print(extract_title("#This is an h1 heading with no space"))
