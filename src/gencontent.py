@@ -22,8 +22,8 @@ def generate_page(from_path: str, template_path: str, dest_path: str, basepath: 
     # replace the title, then replace the content, reassigning variables because replace() doesn't modify things in place
     template_text = template_text.replace("{{ Title }}", page_title)
     template_text = template_text.replace("{{ Content }}", page_content)
-    template_text = template_text.replace('href="/', 'href="/' + basepath)
-    template_text = template_text.replace('src="/', 'src="/' + basepath)
+    template_text = template_text.replace('href="/', 'href="' + basepath)
+    template_text = template_text.replace('src="/', 'src="' + basepath)
     # Write the new full HTML page to a file at dest_path. Be sure to create any necessary directories if they don't exist.
     # make dirs, open, write
     dest_path_dirname = os.path.dirname(dest_path)
